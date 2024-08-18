@@ -64,5 +64,5 @@ The keeper function does the following:
 
 ## Development
 1. clone https://github.com/rahimklaber/stellar_kt, cd into it and run `./gradlew publishAllPublicationsToMavenLocalRepository`. I use my own sdk which not published yet.
-2. To start the frontend: clone this repo, cd into and run `./gradlew jsBrowserDevelopmentRun -t`. This will start the dev server with auto-reload when you make any changes.
+2. The frontend lives in the `composeApp` folder.  To start the frontend: clone this repo, cd into and run `./gradlew jsBrowserDevelopmentRun -t`. This will start the dev server with auto-reload when you make any changes.
 3. The contracts live in the `contracts` folder. Refer to https://developers.stellar.org/docs/build for how to develop contracts.
