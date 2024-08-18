@@ -32,6 +32,8 @@ val DEFAULT_VAULTS = listOf(
             This strategy is as follows: 
             1. Claim Aqua rewards accumulated due to locked lp shares
             2. Sell the aqua rewards and re-invest the proceeds by depositing in the liquidity pool.
+            
+            Note: The keeper tries to do this daily. However, it will take longer if vault the fee does not cover the transaction fee.
         """.trimIndent()
     ),
 )
