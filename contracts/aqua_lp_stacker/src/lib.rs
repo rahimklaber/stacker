@@ -99,6 +99,7 @@ impl AquaStackerTrait for AquaStacker {
                 .set(&DataKey::Config, &config);
 
             vault_trait_default::init(e.clone(), deposit_token, lee_way);
+            aqua_amm::Client::new(&e, &config.pair).get_rewards_info(&e.current_contract_address());
         }
     }
 
@@ -248,11 +249,7 @@ impl AquaStackerTrait for AquaStacker {
 #[contractimpl]
 impl VaultTrait for AquaStacker {
     fn deposit(e: Env, depositor: Address, amount: i128) -> i128 {
-        let amount = vault_trait_default::deposit(e.clone(), depositor, amount);
-
-        aqua_amm::Client::new(&e, &get_config(&e).pair).get_rewards_info(&e.current_contract_address());
-
-        amount
+        vault_trait_default::deposit(e.clone(), depositor.clone(), amount)
     }
 
     fn balance(e: Env, depositor: Address) -> i128 {
@@ -260,9 +257,7 @@ impl VaultTrait for AquaStacker {
     }
 
     fn withdraw(e: Env, depositor: Address, amount: i128) {
-        vault_trait_default::withdraw(e.clone(), depositor, amount);
-
-        aqua_amm::Client::new(&e, &get_config(&e).pair).get_rewards_info(&e.current_contract_address());
+        vault_trait_default::withdraw(e.clone(), depositor.clone(), amount);
     }
 }
 
