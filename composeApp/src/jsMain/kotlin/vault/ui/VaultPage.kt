@@ -94,6 +94,11 @@ fun VaultPage(vaultContract: String) {
     var amountOfYourShares by remember { mutableStateOf("???") }
     var rewardsToBeClaimed by remember { mutableStateOf("???") }
 
+    val fee = remember { details!!.feeBps.toString().padStart(2, '0').toMutableList().apply {
+        add(size - 2, '.')
+        add('%')
+    }.joinToString(separator = "") }
+
     val rewardTokenInfo = remember {  tokenList.firstOrNull{it.contract == details.rewardToken}!! }
 
     LaunchedEffect(v) {
@@ -194,6 +199,16 @@ fun VaultPage(vaultContract: String) {
 
                         Box {
                             Text(amountOfYourShares)
+                        }
+                    }
+
+                    Row {
+                        Box {
+                            Text("fee: ")
+                        }
+
+                        Box {
+                            Text(fee)
                         }
                     }
 

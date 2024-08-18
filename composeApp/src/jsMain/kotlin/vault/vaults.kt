@@ -7,6 +7,7 @@ data class VaultData(
     val pairContract: String,
     val token: String,
     val tokens: List<String>,
+    val feeBps: UInt,
     val rewardToken: String,
     val exchange: String,
     val linkToProtocol: String,
@@ -23,6 +24,7 @@ val DEFAULT_VAULTS = listOf(
             "CCW67TSZV3SSS2HXMBQ5JFGCKJNXKZM7UQUWUZPUTHXSTZLEO7SJMI75",
             "CAUIKL3IYGMERDRUN6YSCLWVAKIFG5Q4YJHUKM4S4NJZQIA3BAS6OJPK"
         ),
+        250u,
         "CAUIKL3IYGMERDRUN6YSCLWVAKIFG5Q4YJHUKM4S4NJZQIA3BAS6OJPK",
         "Aquarius",
         linkToProtocol = "https://aqua.network/pools/CA6GAFOJCW4MGQQBUCQUSA3CLIH25G4SNKB2JHYKZCVWZTNW5VXMSC4O/",
