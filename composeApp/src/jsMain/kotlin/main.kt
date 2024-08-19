@@ -28,6 +28,7 @@ import com.varabyte.kobweb.silk.theme.colors.ColorScheme
 import com.varabyte.kobweb.silk.theme.colors.ColorSchemes
 import com.varabyte.kobweb.silk.theme.colors.palette.button
 import kotlinx.browser.window
+import kotlinx.coroutines.await
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.rahimklaber.stellar.base.KeyPair
@@ -41,6 +42,7 @@ import ui.components.VaultGridStyle
 import ui.components.surfaceColor
 import vault.ui.VaultList
 import vault.ui.VaultPage
+import walletkit.createModalParams
 
 
 suspend fun main() {

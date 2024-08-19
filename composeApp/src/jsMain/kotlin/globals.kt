@@ -3,6 +3,7 @@ import me.rahimklaber.stellar.base.Network
 import me.rahimklaber.stellar.sorobanClient
 import token.TokenRepo
 import vault.aqua_lp_stacker.AquaLpStackerRepo
+import walletkit.createWalletKit
 
 val rpcAddress = if(Config.network == Network.TESTNET){
     "https://soroban-testnet.stellar.org"
@@ -12,6 +13,10 @@ val rpcAddress = if(Config.network == Network.TESTNET){
 
 val rpcClient = sorobanClient(rpcAddress)
 val tokenRepo = TokenRepo(rpcClient, RepoConfig(Config.network, ""))
+
+val walletKit = createWalletKit()
+
+
 
 val _10to7 = BigDecimal.fromInt(1_000_000_0)
 

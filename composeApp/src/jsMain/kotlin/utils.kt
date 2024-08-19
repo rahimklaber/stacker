@@ -3,11 +3,13 @@ import com.ionspin.kotlin.bignum.decimal.toBigDecimal
 import kotlinx.browser.window
 import kotlinx.coroutines.await
 import me.rahimklaber.stellar.base.Network
+import me.rahimklaber.stellar.base.Transaction
+import me.rahimklaber.stellar.base.xdr.toXdrString
 import ui.components.TxSubmitModalState
 import ui.components.UpdateState
 
-suspend fun signWtihWallet(tx: TransactionBlob, updateState: UpdateState) = run{
-    val promise = Freighter.signTransaction(tx, Config.network.name())
+suspend fun signWithWallet(tx: Transaction, updateState: UpdateState) = run{
+    val promise = walletKit.signTransaction(tx.toEnvelopeXdr().toXdrString())
     promise.catch { updateState(TxSubmitModalState.Failed(it.message ?: "unknown failure reason")) }.await()
 
     val blob = promise.await()

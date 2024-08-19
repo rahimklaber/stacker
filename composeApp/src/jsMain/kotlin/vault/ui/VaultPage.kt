@@ -70,6 +70,7 @@ import updateStateOnFailure
 import vault.DEFAULT_VAULTS
 import vault.VaultData
 import vault.aqua_lp_stacker.AquaLpStackerRepo
+import walletKit
 
 
 @Composable
@@ -322,7 +323,7 @@ private fun DepositForm(
                     val amountParsed = parseAmountAsULong(amount)
 
                     val result = stackerRepo.deposit(source, source.accountId, amountParsed) {
-                        Freighter.signTransaction(it.toEnvelopeXdr().toXdrString(), Config.network.name()).await()
+                        walletKit.signTransaction(it.toEnvelopeXdr().toXdrString()).await().signedTxXdr
                     }
 
                     result.fold({ throw it }) { it.hash }
@@ -382,7 +383,7 @@ private fun WithdrawForm(
                     val amountParsed = parseAmountAsULong(amount)
 
                     val result = stackerRepo.withdraw(source, source.accountId, amountParsed) {
-                        Freighter.signTransaction(it.toEnvelopeXdr().toXdrString(), Config.network.name()).await()
+                        walletKit.signTransaction(it.toEnvelopeXdr().toXdrString()).await().signedTxXdr
                     }
 
                     stackerRepo.balance(connectedAddress!!).getOrNull()?.let {
