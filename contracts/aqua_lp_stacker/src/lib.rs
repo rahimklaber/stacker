@@ -1,11 +1,11 @@
 #![no_std]
 
-use soroban_fixed_point_math::{SorobanFixedPoint};
+use soroban_fixed_point_math::SorobanFixedPoint;
 use soroban_sdk::auth::{ContractContext, InvokerContractAuthEntry, SubContractInvocation};
 use soroban_sdk::token::TokenClient;
-use soroban_sdk::{contract, contracterror, contractimpl, contracttype, panic_with_error, vec, Address, BytesN, Env, IntoVal, Symbol, TryFromVal, TryIntoVal, Val};
+use soroban_sdk::{contract, contracterror, contractimpl, contracttype, panic_with_error, vec, Address, BytesN, Env, IntoVal, Symbol, TryFromVal, Val};
 use vault::VaultTrait;
-use vault::{vault_trait_default};
+use vault::vault_trait_default;
 use crate::events::publish_keeper;
 
 #[contracttype]

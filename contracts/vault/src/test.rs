@@ -1,7 +1,7 @@
 #![cfg(test)]
 extern crate std;
 
-use soroban_sdk::{contract, contractimpl, symbol_short, testutils::Address as _, token::StellarAssetClient, vec, xdr::ScVal, Address, Env, IntoVal, TryFromVal, TryIntoVal, Val};
+use soroban_sdk::{contract, contractimpl, testutils::Address as _, token::StellarAssetClient, Address, Env};
 
 use crate::{vault_trait_default, VaultTrait};
 
