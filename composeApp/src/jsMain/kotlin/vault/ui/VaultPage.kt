@@ -121,6 +121,12 @@ fun VaultPage(vaultContract: String) {
         }
     }
 
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+        H2 {
+            Text(details.name)
+        }
+    }
+
     SimpleGrid(numColumns(1, lg = 2), VaultGridStyle.toModifier().fillMaxSize()) {
         Box(
             Modifier
@@ -135,11 +141,6 @@ fun VaultPage(vaultContract: String) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                //desc
-
-                H2 {
-                    Text(details.name)
-                }
 
                 Column(
                     ComponentSurfaceStyle.toModifier()
@@ -236,7 +237,10 @@ fun VaultPage(vaultContract: String) {
 
         }
 
-        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
+        Box(Modifier
+            .padding(10.px)
+            .margin(15.px)
+            .fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
             Column(
                 Modifier
                     .fillMaxWidth(95.percent),
