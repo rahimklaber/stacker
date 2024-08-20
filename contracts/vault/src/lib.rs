@@ -1,6 +1,7 @@
 #![no_std]
 use crate::errors::require_gt_0;
 use crate::storage::{get_deposit_token, get_tot_supply, update_shares};
+use soroban_fixed_point_math::SorobanFixedPoint;
 use soroban_sdk::token::TokenClient;
 use soroban_sdk::{Address, Env};
 
@@ -11,13 +12,14 @@ pub trait VaultTrait {
     /// get amount of shares
     fn balance(e: Env, depositor: Address) -> i128;
     // returns amount of tokens received
-    fn withdraw(e: Env, depositor: Address, amount: i128);
+    fn withdraw(e: Env, depositor: Address, amount: i128) -> i128;
 }
 
 pub mod vault_trait_default {
     use crate::errors::{require_gt_0, Error};
     use crate::preview_withdraw;
     use crate::storage::{DataKey, _get_deposit_token, get_deposit_token, get_leeway, get_shares, get_tot_supply, update_shares};
+    use soroban_fixed_point_math::SorobanFixedPoint;
     use soroban_sdk::token::TokenClient;
     use soroban_sdk::{assert_with_error, Address, Env};
     use crate::events::{publish_deposit, publish_withdraw};
@@ -50,10 +52,11 @@ pub mod vault_trait_default {
         } else {
             let token_balance = token_client.balance(&e.current_contract_address());
 
-            let shares = (amount * tot_supply_shares) / token_balance;
+            let shares = amount.fixed_mul_floor(&e, &tot_supply_shares, &token_balance); // (amount * tot_supply_shares) / token_balance;
 
             //todo does this work?
-            assert_with_error!(&e, amount - preview_withdraw(shares, token_balance + amount, tot_supply_shares) < get_leeway(&e), Error::TooMuchLostWithDeposit);
+            assert_with_error!(&e, shares > 0, Error::TooMuchLostWithDeposit);
+            assert_with_error!(&e, amount - preview_withdraw(&e, shares, token_balance + amount, tot_supply_shares + shares) < get_leeway(&e), Error::TooMuchLostWithDeposit);
 
             shares
         };
@@ -70,7 +73,7 @@ pub mod vault_trait_default {
         get_shares(&e, depositor)
     }
 
-    pub fn withdraw(e: Env, depositor: Address, amount_shares: i128) {
+    pub fn withdraw(e: Env, depositor: Address, amount_shares: i128) -> i128 {
         depositor.require_auth();
         require_gt_0(&e, amount_shares);
 
@@ -80,17 +83,20 @@ pub mod vault_trait_default {
         let token_balance = token_client.balance(&e.current_contract_address());
         let tot_supply_shares = get_tot_supply(&e);
 
-        let amount_tokens = (amount_shares * token_balance) / tot_supply_shares;
+        let amount_tokens = amount_shares.fixed_mul_floor(&e, &token_balance, &tot_supply_shares); //(amount_shares * token_balance) / tot_supply_shares;
 
         publish_withdraw(&e, &depositor, amount_shares);
 
         update_shares(&e, &depositor, -amount_shares);
         token_client.transfer(&e.current_contract_address(), &depositor, &amount_tokens);
+
+        amount_tokens
     }
 }
 
-fn preview_withdraw(amount_shares: i128, token_balance: i128, tot_supply: i128) -> i128{
-    return(amount_shares * token_balance) / tot_supply;
+fn preview_withdraw(e: &Env, amount_shares: i128, token_balance: i128, tot_supply: i128) -> i128{
+    amount_shares.fixed_mul_floor(e, &token_balance, &tot_supply)
+    //eturn(amount_shares * token_balance) / tot_supply;
 }
 
 // pub fn deposit_for_fee(e: &Env, depositor: Address, amount: i128) -> i128 {

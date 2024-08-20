@@ -256,8 +256,8 @@ impl VaultTrait for AquaStacker {
         vault_trait_default::balance(e, depositor)
     }
 
-    fn withdraw(e: Env, depositor: Address, amount: i128) {
-        vault_trait_default::withdraw(e.clone(), depositor.clone(), amount);
+    fn withdraw(e: Env, depositor: Address, amount: i128) -> i128 {
+        vault_trait_default::withdraw(e.clone(), depositor.clone(), amount)
     }
 }
 

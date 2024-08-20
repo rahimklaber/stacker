@@ -11,7 +11,7 @@ doctest = false
 [dependencies]
 soroban-sdk = { workspace = true }
 vault = { path = "../vault" }
-soroban-fixed-point-math = { version = "1.1.1"}
+soroban-fixed-point-math = { workspace = true }
 
 
 [dev-dependencies]
