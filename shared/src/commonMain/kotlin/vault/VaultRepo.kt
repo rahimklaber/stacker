@@ -29,7 +29,7 @@ interface VaultRepo {
         depositor: String,
         amount: ULong, // i128
         sign: SignFun
-    ): Either<Throwable, ResultWithHash<Unit>>
+    ): Either<Throwable, ResultWithHash<ULong>> /*i128*/
 }
 
 class RpcVaultRepo(
@@ -74,7 +74,7 @@ class RpcVaultRepo(
         depositor: String,
         amount: ULong, // i128
         sign: SignFun
-    ): Either<Throwable, ResultWithHash<Unit>> /*i128*/{
+    ): Either<Throwable, ResultWithHash<ULong>> /*i128*/{
         return createPrepareAndSubmitTx(
             rpc,
             source,
@@ -84,7 +84,7 @@ class RpcVaultRepo(
             config.network,
             sign
         ).map {
-            ResultWithHash(Unit, it.second)
+            ResultWithHash(it.first.cast<SCVal.I128>().toULong(), it.second)
         }
     }
 }
