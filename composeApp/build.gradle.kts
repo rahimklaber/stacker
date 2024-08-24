@@ -36,7 +36,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
 
 //            implementation(npm("@stellar/freighter-api", "1.7.1"))
-            implementation(npm("@creit.tech/stellar-wallets-kit", "1.0.0"))
+            implementation(npm("@creit.tech/stellar-wallets-kit", "1.1.0"))
 
 
 

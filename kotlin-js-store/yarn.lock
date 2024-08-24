@@ -20,19 +20,24 @@
     tweetnacl "^1.0.3"
     tweetnacl-util "^0.15.1"
 
-"@creit.tech/stellar-wallets-kit@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@creit.tech/stellar-wallets-kit/-/stellar-wallets-kit-1.0.0.tgz#8b0332d01b712d130cd01d35711ef32fc991a14a"
-  integrity sha512-kHJDgVJfWGpli9cB1bCxKRmrq1OM25fakGDs1fp1a7VJ/NgXYKIzoi8m4G7VXU3S+6hzJpga0kl169pZuMVRfg==
+"@creit.tech/stellar-wallets-kit@1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@creit.tech/stellar-wallets-kit/-/stellar-wallets-kit-1.1.0.tgz#91c9f101d2024dc24f75c718c8ecd4c773a422b2"
+  integrity sha512-u4UTzMCT6DuZ88KRBgWnTiQAGlxUDwJqohJA6x6SIMy/E5eZOyc13nJcJ3ESOMVx12lKp7nMat0+lTnqME8j+g==
   dependencies:
     "@albedo-link/intent" "0.12.0"
     "@creit-tech/xbull-wallet-connect" "github:Creit-Tech/xBull-Wallet-Connect#0.2.0"
     "@lobstrco/signer-extension-api" "1.0.0-beta.0"
-    "@stellar/freighter-api" "2.0.0"
+    "@ngneat/elf" "^2.5.1"
+    "@ngneat/elf-devtools" "^1.3.0"
+    "@ngneat/elf-entities" "^5.0.2"
+    "@ngneat/elf-persist-state" "^1.2.1"
+    "@stellar/freighter-api" "3.0.0"
     "@walletconnect/modal" "2.6.2"
     "@walletconnect/sign-client" "2.11.2"
     events "3.3.0"
     lit "2.8.0"
+    rxjs "^7.8.1"
 
 "@discoveryjs/json-ext@^0.5.0":
   version "0.5.7"
@@ -174,6 +179,26 @@
   dependencies:
     "@motionone/dom" "^10.16.4"
     tslib "^2.3.1"
+
+"@ngneat/elf-devtools@^1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@ngneat/elf-devtools/-/elf-devtools-1.3.0.tgz#1448883b14f08189323dc71f0b76ef496aa2896b"
+  integrity sha512-J9+4Vk/S/nKFGnXGZUDYrIx/K8Jfv4TLpzR3voBSOtSeq+c8Q0hdmo8iW7oaK6y5FWFDk0VJktlEh9cjylYxFg==
+
+"@ngneat/elf-entities@^5.0.2":
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/@ngneat/elf-entities/-/elf-entities-5.0.2.tgz#832c4f07934d7cdd7384cb794c1f4399c4926430"
+  integrity sha512-G4ag51lvM3tOSgpxVVFYAgsh/bOL5BkNb4Z0VtosaM/CTWTHoNrf8UdvcaeJ3+sP1RS3bmEdZ9xUE8ifnVxssA==
+
+"@ngneat/elf-persist-state@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@ngneat/elf-persist-state/-/elf-persist-state-1.2.1.tgz#9005baf6197b29389b0ff404b72d34dee147bb37"
+  integrity sha512-R+5IRLC35cDT403sSs37UeqqOpHNnCwHl3eicPv/Rc+JJ7Av1bcQClSF2mHC0jE4pkYmEuVghpzUntvmrKCCwA==
+
+"@ngneat/elf@^2.5.1":
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/@ngneat/elf/-/elf-2.5.1.tgz#bf87146ab4ee9bd9364f03b5cfad6ce180cfb343"
+  integrity sha512-13BItNZFgHglTiXuP9XhisNczwQ5QSzH+imAv9nAPsdbCq/3ortqkIYRnlxB8DGPVcuIjLujQ4OcZa+9QWgZtw==
 
 "@parcel/watcher-android-arm64@2.4.1":
   version "2.4.1"
@@ -406,10 +431,10 @@
     "@stablelib/random" "^1.0.2"
     "@stablelib/wipe" "^1.0.1"
 
-"@stellar/freighter-api@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@stellar/freighter-api/-/freighter-api-2.0.0.tgz#488915a4aa0cec8c9a3fc84ef31e21cd5ec41343"
-  integrity sha512-j/R7MLPL8S3QhwOEdAxSl7MgWBTXWlOXQKQyXR8mPk1JMKKR4tF8e4U+Fs9TPQH0HZoYqfVDvLOOUrTMMY058Q==
+"@stellar/freighter-api@3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@stellar/freighter-api/-/freighter-api-3.0.0.tgz#305854910e46c199728e34e6fe19ce2e253a86b9"
+  integrity sha512-AI1AeHnCPLMcM8d6182FScOJjCFd1tLZcNuu5M10NmtuLfNzavw+f991dWBoz6h41mOKjauIaojR+7VfU2nULg==
 
 "@types/body-parser@*":
   version "1.19.5"
@@ -3249,7 +3274,7 @@ rimraf@^3.0.2:
   dependencies:
     glob "^7.1.3"
 
-rxjs@^7.5.5:
+rxjs@^7.5.5, rxjs@^7.8.1:
   version "7.8.1"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-7.8.1.tgz#6f6f3d99ea8044291efd92e7c7fcf562c4057543"
   integrity sha512-AA3TVj+0A2iuIoQkWEK/tqFjBq2j+6PO6Y0zJcvzLAFhEFIO3HL0vls9hWLncZbAAbK0mar7oZ4V079I/qPMxg==
