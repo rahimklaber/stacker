@@ -94,7 +94,7 @@ fun VaultPage(vaultContract: String) {
     var amountOfYourShares by remember { mutableStateOf("???") }
     var rewardsToBeClaimed: ULong? by remember { mutableStateOf(null) }
 
-    var priceOfRewardToken: Float? by mutableStateOf(null)
+    var priceOfRewardToken: Float? by remember {  mutableStateOf(null) }
 
     val fee = remember {
         details.feeBps.toString().padStart(2, '0').toMutableList().apply {
@@ -185,9 +185,9 @@ fun VaultPage(vaultContract: String) {
 
                         Row(Modifier.gap(3.px), verticalAlignment = Alignment.CenterVertically) {
                             Text(rewardsToBeClaimed?.let { reward ->
-                                priceOfRewardToken?.let { price ->
-                                    "${parseULongtoString(reward)} (${calculateBalanceInUsd(reward, price, true)})"
-                                }
+                                parseULongtoString(reward) + (priceOfRewardToken?.let { price ->
+                                    " (${calculateBalanceInUsd(reward, price, true)})"
+                                } ?: "")
                             } ?: "???")
                             Img(rewardTokenInfo.icon, attrs = Modifier.width(1.5.cssRem).toAttrs { })
                         }

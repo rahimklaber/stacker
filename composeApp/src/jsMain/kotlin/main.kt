@@ -81,7 +81,7 @@ suspend fun main() {
                         .overflow(overflowY = Overflow.Auto , overflowX = Overflow.Hidden)
                         .fillMaxSize()
                         .setVariable(InputVars.BorderColor, Color.rgb(224, 224, 224))
-                        .setVariable(InputVars.BorderFocusColor, Color.rgb(224, 224, 224)),
+                        .setVariable(InputVars.BorderFocusColor, Colors.Black),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Row(Modifier
