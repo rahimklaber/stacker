@@ -76,3 +76,15 @@ fun parseAmountAsULong(amount: String, decimals: Int = 7) : ULong{
 fun parseULongtoString(amount: ULong, decimals: Int = 7): String {
     return  BigDecimal.fromULong(amount).div(BigDecimal.TEN.pow(decimals)).toPlainString()
 }
+
+fun calculateBalanceInUsd(balance: ULong, price: Float, showCents: Boolean = false): String{
+    val amount = price *  balance.toFloat().div(10_000_000)
+
+    val split = amount.toString().split(".")
+
+    return "$" + if(showCents){
+        split.first() + "." + split.last().take(2)
+    }else{
+        split.first()
+    }
+}

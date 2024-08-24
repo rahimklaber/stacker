@@ -7,8 +7,8 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import aqua.pair.AquaPairRepo
+import calculateBalanceInUsd
 import com.ionspin.kotlin.bignum.decimal.BigDecimal
-import com.varabyte.kobweb.compose.css.TextAlign
 import com.varabyte.kobweb.compose.css.TextDecorationLine
 import com.varabyte.kobweb.compose.css.WhiteSpace
 import com.varabyte.kobweb.compose.foundation.layout.Arrangement
@@ -27,7 +27,6 @@ import com.varabyte.kobweb.compose.ui.modifiers.maxHeight
 import com.varabyte.kobweb.compose.ui.modifiers.maxWidth
 import com.varabyte.kobweb.compose.ui.modifiers.onClick
 import com.varabyte.kobweb.compose.ui.modifiers.padding
-import com.varabyte.kobweb.compose.ui.modifiers.textAlign
 import com.varabyte.kobweb.compose.ui.modifiers.textDecorationLine
 import com.varabyte.kobweb.compose.ui.modifiers.whiteSpace
 import com.varabyte.kobweb.compose.ui.modifiers.width
@@ -46,7 +45,6 @@ import kotlinx.coroutines.await
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import me.rahimklaber.stellar.base.xdr.toXdrString
-import name
 import org.jetbrains.compose.web.css.cssRem
 import org.jetbrains.compose.web.css.percent
 import org.jetbrains.compose.web.css.px
@@ -56,6 +54,7 @@ import org.jetbrains.compose.web.dom.Img
 import org.jetbrains.compose.web.dom.Text
 import parseAmountAsULong
 import parseULongtoString
+import priceFetcher
 import rpcClient
 import stackerRepoFor
 import tokenList
@@ -87,33 +86,41 @@ fun VaultPage(vaultContract: String) {
 
     val pairRepo = remember { AquaPairRepo(rpcClient, RepoConfig(Config.network, details.pairContract)) }
 
-    var v by remember { mutableStateOf(0) }
+    var reloadMarker by remember { mutableStateOf(0) }
 
     val stackerRepo = remember { stackerRepoFor(vaultContract) }
 
     var amountDeposited by remember { mutableStateOf("???") }
     var amountOfYourShares by remember { mutableStateOf("???") }
-    var rewardsToBeClaimed by remember { mutableStateOf("???") }
+    var rewardsToBeClaimed: ULong? by remember { mutableStateOf(null) }
 
-    val fee = remember { details!!.feeBps.toString().padStart(2, '0').toMutableList().apply {
-        add(size - 2, '.')
-        add('%')
-    }.joinToString(separator = "") }
+    var priceOfRewardToken: Float? by mutableStateOf(null)
 
-    val rewardTokenInfo = remember {  tokenList.firstOrNull{it.contract == details.rewardToken}!! }
+    val fee = remember {
+        details.feeBps.toString().padStart(2, '0').toMutableList().apply {
+            add(size - 2, '.')
+            add('%')
+        }.joinToString(separator = "")
+    }
 
-    LaunchedEffect(v) {
+    val rewardTokenInfo = remember { tokenList.firstOrNull { it.contract == details.rewardToken }!! }
+
+    LaunchedEffect(reloadMarker) {
         amountDeposited = parseULongtoString(tokenRepo.balance(details.token, details.vaultContract))
     }
 
-    LaunchedEffect(Unit){
+    LaunchedEffect(Unit) {
+        priceOfRewardToken = priceFetcher.priceOf(details.rewardToken)
         while (true) {
-            rewardsToBeClaimed = pairRepo.rewardBalance(details.vaultContract).getOrNull()?.let(::parseULongtoString) ?: "0"
+            rewardsToBeClaimed =
+                pairRepo.rewardBalance(details.vaultContract).getOrNull()
+
+            console.log(rewardsToBeClaimed)
             delay(10000)
         }
     }
 
-    LaunchedEffect(connectedAddress, v) {
+    LaunchedEffect(connectedAddress, reloadMarker) {
         if (connectedAddress != null) {
             stackerRepo.balance(connectedAddress!!).getOrNull()?.let {
                 amountOfYourShares = parseULongtoString(it)
@@ -150,7 +157,7 @@ fun VaultPage(vaultContract: String) {
                         .whiteSpace(WhiteSpace.PreWrap)
                 ) {
                     H2 {
-                        Text("Vault info: ")
+                        Text("Vault info")
                     }
 
                     Row {
@@ -179,7 +186,11 @@ fun VaultPage(vaultContract: String) {
                         }
 
                         Row(Modifier.gap(3.px), verticalAlignment = Alignment.CenterVertically) {
-                            Text(rewardsToBeClaimed)
+                            Text(rewardsToBeClaimed?.let { reward ->
+                                priceOfRewardToken?.let { price ->
+                                    "${parseULongtoString(reward)} (${calculateBalanceInUsd(reward, price, true)})"
+                                }
+                            } ?: "???")
                             Img(rewardTokenInfo.icon, attrs = Modifier.width(1.5.cssRem).toAttrs { })
                         }
                     }
@@ -237,17 +248,19 @@ fun VaultPage(vaultContract: String) {
 
         }
 
-        Box(Modifier
-            .padding(10.px)
-            .margin(15.px)
-            .fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
+        Box(
+            Modifier
+                .padding(10.px)
+                .margin(15.px)
+                .fillMaxWidth(), contentAlignment = Alignment.TopCenter
+        ) {
             Column(
                 Modifier
                     .fillMaxWidth(95.percent),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Forms(scope, stackerRepo, details) { v++ }
+                Forms(scope, stackerRepo, details) { reloadMarker++ }
             }
         }
     }
@@ -260,12 +273,22 @@ private fun Forms(scope: CoroutineScope, stackerRepo: AquaLpStackerRepo, details
         reloadData()
     }
 
+    var amountOfShares by remember { mutableStateOf(0uL) }
+    var amountOfTokens by remember { mutableStateOf(0uL) }
+
+
+    LaunchedEffect(connectedAddress) {
+        amountOfShares = connectedAddress?.let { stackerRepo.balance(it) }?.getOrNull() ?: 0uL
+        amountOfTokens = connectedAddress?.let { tokenRepo.balance(details.token, it) } ?: 0uL
+
+    }
+
     Tabs(ComponentSurfaceStyle.toModifier()) {
         TabPanel {
             Tab { Text("Deposit") }
             Panel {
                 FormsLayout {
-                    DepositForm(scope, stackerRepo, details, modalStuff)
+                    DepositForm(scope, stackerRepo, amountOfTokens, details, modalStuff)
                 }
             }
         }
@@ -274,7 +297,7 @@ private fun Forms(scope: CoroutineScope, stackerRepo: AquaLpStackerRepo, details
             Tab { Text("Withdraw") }
             Panel {
                 FormsLayout {
-                    WithdrawForm(scope, stackerRepo, details, modalStuff)
+                    WithdrawForm(scope, stackerRepo, amountOfShares, { amountOfShares = it }, details, modalStuff)
                 }
             }
         }
@@ -287,6 +310,7 @@ private fun Forms(scope: CoroutineScope, stackerRepo: AquaLpStackerRepo, details
 private fun DepositForm(
     scope: CoroutineScope,
     stackerRepo: AquaLpStackerRepo,
+    amountOfToken: ULong,
     details: VaultData,
     modalStuff: Pair<ShowFun, UpdateState>,
 ) {
@@ -294,24 +318,18 @@ private fun DepositForm(
 
     val (toggleModal, updateState) = modalStuff
 
-    var amountOfTokens by remember { mutableStateOf(0uL) }
-
-    LaunchedEffect(connectedAddress) {
-        amountOfTokens = connectedAddress?.let { tokenRepo.balance(details.token, it) } ?: 0uL
-    }
-
     Column {
-        InputField("amount", amount, { amount = it })
+        InputField("amount", amount, { input -> input.toFloatOrNull()?.let { amount = input } })
         Box(
             Modifier
                 .textDecorationLine(TextDecorationLine.Underline)
                 .onClick {
-                    amount = BigDecimal.fromULong(amountOfTokens).div(_10to7).toPlainString()
+                    amount = BigDecimal.fromULong(amountOfToken).div(_10to7).toPlainString()
                 }
         ) {
             Text(
                 "max: ${
-                    BigDecimal.fromULong(amountOfTokens).div(_10to7).toPlainString()
+                    BigDecimal.fromULong(amountOfToken).div(_10to7).toPlainString()
                 }"
             ) //todo read decimals from token contract
         }
@@ -347,6 +365,8 @@ private fun DepositForm(
 private fun WithdrawForm(
     scope: CoroutineScope,
     stackerRepo: AquaLpStackerRepo,
+    amountOfShares: ULong,
+    updateAmountOfShares: (ULong) -> Unit,
     details: VaultData,
     modalStuff: Pair<ShowFun, UpdateState>,
 ) {
@@ -354,14 +374,8 @@ private fun WithdrawForm(
 
     val (toggleModal, updateState) = modalStuff
 
-    var amountOfShares by remember { mutableStateOf(0uL) }
-
-    LaunchedEffect(connectedAddress) {
-        amountOfShares = connectedAddress?.let { stackerRepo.balance(it) }?.getOrNull() ?: 0uL
-    }
-
     Column {
-        InputField("amount", amount, { amount = it })
+        InputField("amount", amount, { input -> input.toFloatOrNull()?.let { amount = input } })
         Box(
             Modifier
                 .textDecorationLine(TextDecorationLine.Underline)
@@ -391,7 +405,7 @@ private fun WithdrawForm(
                     }
 
                     stackerRepo.balance(connectedAddress!!).getOrNull()?.let {
-                        amountOfShares = it
+                        updateAmountOfShares(it)
                     }
 
                     result.fold({ throw it }) { it.hash }

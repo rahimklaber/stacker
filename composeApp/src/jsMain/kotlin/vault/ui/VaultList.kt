@@ -1,6 +1,9 @@
 package vault.ui
 
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import backendClient
 import com.varabyte.kobweb.compose.css.TextAlign
 import com.varabyte.kobweb.compose.foundation.layout.Box
 import com.varabyte.kobweb.compose.foundation.layout.Column
@@ -30,84 +33,101 @@ import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.dom.Th
 import org.jetbrains.compose.web.dom.Tr
 import tokenList
+import tokenRepo
 import vault.DEFAULT_VAULTS
 import vault.VaultData
+import kotlin.text.iterator
 
 
 @Composable
-fun VaultList(vaults: List<VaultData> = DEFAULT_VAULTS) = Column(
-    Modifier.fillMaxSize().padding(1.cssRem),
-    horizontalAlignment = Alignment.CenterHorizontally
-) {
-    Table(
-        Modifier
-            .textAlign(TextAlign.Left)
-            .width(700.px)
-            .maxWidth(95.percent)
-            .toAttrs()
+fun VaultList(vaults: List<VaultData> = DEFAULT_VAULTS) {
+
+
+
+    Column(
+        Modifier.fillMaxSize().padding(1.cssRem),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Tr {
-            Th {
-                Text("Vault")
+        Table(
+            Modifier
+                .textAlign(TextAlign.Left)
+                .width(700.px)
+                .maxWidth(95.percent)
+                .toAttrs()
+        ) {
+            Tr {
+                Th {
+                    Text("Vault")
+                }
+                Th {
+                    Text("Apy")
+                }
+                Th {
+                    Text("Tvl vault")
+                }
             }
-            Th {
-                Text("Apy")
-            }
-            Th {
-                Text("Tvl vault")
-            }
-        }
 
-        Tbody {
-            for (vault in vaults) {
-                Tr {
+            Tbody {
+                for (vault in vaults) {
+                    var tvlInUsd by remember { mutableStateOf("???")}
 
-                    Td {
-                        A("#vault/${vault.vaultContract}", {classes("a-hidden")}) {
-                            Row(
-                                Modifier
-                                    .gap(5.px),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
+                    LaunchedEffect(Unit) {
+                        tvlInUsd = backendClient.getPriceOfToken(vault.token).getOrNull()?.let {
+
+                            val amount = it * tokenRepo.balance(vault.token, vault.vaultContract).toFloat().div(10_000_000)
+
+                            "$${amount.toString().split(".").first()}"
+                        } ?: "???"
+                    }
+                    Tr {
+
+                        Td {
+                            A("#vault/${vault.vaultContract}", {classes("a-hidden")}) {
                                 Row(
-                                    Modifier.gap(1.px)
-                                ) {
-                                    vault.tokens.forEach { token ->
-                                        val url = tokenList.firstOrNull { it.contract == token }?.icon
-                                            ?: ""
-                                        Img(url, attrs = Modifier.width(1.5.cssRem).toAttrs { })
-                                    }
-                                }
-                                Column(
                                     Modifier
-                                        .gap(5.px)
+                                        .gap(5.px),
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Box { Text(vault.name) }
-                                    Box(
-                                        Modifier
-                                            .fontSize(FontSizeVars.SM.value())
-                                            .padding(2.px)
-                                            .backgroundColor(Colors.Tan)
+                                    Row(
+                                        Modifier.gap(1.px)
                                     ) {
-                                        Text(vault.exchange)
+                                        vault.tokens.forEach { token ->
+                                            val url = tokenList.firstOrNull { it.contract == token }?.icon
+                                                ?: ""
+                                            Img(url, attrs = Modifier.width(1.5.cssRem).toAttrs { })
+                                        }
+                                    }
+                                    Column(
+                                        Modifier
+                                            .gap(5.px)
+                                    ) {
+                                        Box { Text(vault.name) }
+                                        Box(
+                                            Modifier
+                                                .fontSize(FontSizeVars.SM.value())
+                                                .padding(2.px)
+                                                .backgroundColor(Colors.Tan)
+                                        ) {
+                                            Text(vault.exchange)
+                                        }
                                     }
                                 }
+
                             }
-
                         }
-                    }
 
 
-                    Td {
-                        Text("???")
-                    }
+                        Td {
+                            Text("???")
+                        }
 
-                    Td {
-                        Text("???")
+                        Td {
+                            Text(tvlInUsd)
+                        }
+
                     }
 
                 }
-
             }
         }
     }

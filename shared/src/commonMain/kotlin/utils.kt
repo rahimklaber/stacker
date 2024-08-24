@@ -34,6 +34,7 @@ import me.rahimklaber.stellar.base.xdr.soroban.SCBytes
 import me.rahimklaber.stellar.base.xdr.soroban.SCMap
 import me.rahimklaber.stellar.base.xdr.soroban.SCSymbol
 import me.rahimklaber.stellar.base.xdr.soroban.SCVal
+import me.rahimklaber.stellar.base.xdr.soroban.SCVec
 import me.rahimklaber.stellar.base.xdr.soroban.ScAddress
 import me.rahimklaber.stellar.base.xdr.soroban.UInt128Parts
 import me.rahimklaber.stellar.base.xdr.toXdrString
@@ -188,6 +189,10 @@ suspend fun submitWithRpc(rpc: SorobanClient, txBlob: String) = either<Throwable
 
     ok as GetTransactionResponse
 }
+
+
+fun List<SCVal>.toScVec() = SCVal.Vec(SCVec(this))
+fun SCVal.Vec.toList() = vec!!.vals
 
 fun Network.name() = when(this){
     Network.TESTNET -> "TESTNET"
