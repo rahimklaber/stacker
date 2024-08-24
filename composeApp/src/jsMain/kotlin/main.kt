@@ -78,13 +78,17 @@ suspend fun main() {
 
                 Column(
                     Modifier
-                        .overflow(Overflow.Scroll)
+                        .overflow(overflowY = Overflow.Auto , overflowX = Overflow.Hidden)
                         .fillMaxSize()
                         .setVariable(InputVars.BorderColor, Color.rgb(224, 224, 224))
                         .setVariable(InputVars.BorderFocusColor, Color.rgb(224, 224, 224)),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                    Row(Modifier
+                        .padding(leftRight = 10.px)
+                        .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically
+                    ) {
                         A("#", {classes("a-hidden")}){
                             H1(){
                                 Text("Stacker")

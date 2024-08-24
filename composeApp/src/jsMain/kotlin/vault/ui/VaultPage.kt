@@ -114,8 +114,6 @@ fun VaultPage(vaultContract: String) {
         while (true) {
             rewardsToBeClaimed =
                 pairRepo.rewardBalance(details.vaultContract).getOrNull()
-
-            console.log(rewardsToBeClaimed)
             delay(10000)
         }
     }
